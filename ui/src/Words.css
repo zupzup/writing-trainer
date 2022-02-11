@@ -1,0 +1,16 @@
+.Words {
+  background-color: #eeeeee;
+  font-size: 20px;
+}
+
+.Words span {
+  margin: 20px;
+}
+
+.Words .active {
+  color: #00aa00;
+}
+
+.Words .inactive {
+  color: #aa0000;
+}

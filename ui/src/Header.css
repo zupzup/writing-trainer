@@ -1,0 +1,10 @@
+.Header {
+  margin-top: 50px;
+  text-align: center;
+  background-color: #dddddd;
+}
+
+.Header input, button {
+  font-size: 24px;
+  margin: 5px;
+}
