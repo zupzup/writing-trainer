@@ -3,6 +3,7 @@ import Header from './Header';
 import Text from './Text';
 import Timer from './Timer';
 import Words from './Words';
+import { useReducer } from 'react';
 
 type WordState = {
   word: String,
@@ -20,15 +21,18 @@ type StartPayload = {
   words: String[],
 };
 
-type Action = 
+
+export type Action = 
   | { type: 'start'; payload: StartPayload }
-  | { type: 'reset' };
+  | { type: 'reset' }
+  | { type: 'tick' };
 
 const initialState: State = {
   running: false,
   currentTimer: 0,
   words: []
 };
+
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -39,6 +43,14 @@ const reducer = (state: State, action: Action): State => {
         words: action.payload.words.map((word: String) => ({ word, used: false })),
       }
     }
+    case 'tick': {
+      let newTimer = state.currentTimer - 1;
+      return {
+        running: newTimer === 0 ? false : state.running,
+        currentTimer: newTimer,
+        words: state.words,
+      }
+    }
     case 'reset': {
       return initialState;
     }
@@ -47,14 +59,38 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+
 function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const startWriting = (minutes: number, words: number) => {
+    // TODO: get amount of words from API
+    dispatch({ type: 'start', payload: {
+      minutes,
+      words: []
+    }});
+
+  };
+
+  const stopWriting = () => {
+    dispatch({ type:'reset' });
+  };
+
   return (
     <div className="App">
       <div className="Inner">
-        <Header />
+        <Header 
+          startWriting={startWriting}
+          running={state.running}
+          stopWriting={stopWriting}
+        />
         <Words />
         <Text />
-        <Timer />
+        <Timer 
+          timer={state.currentTimer}
+          running={state.running}
+          dispatch={dispatch}
+        />
       </div>
     </div>
   );
