@@ -4,8 +4,9 @@ import Text from './Text';
 import Timer from './Timer';
 import Words from './Words';
 import { useReducer } from 'react';
+import axios, {AxiosResponse as Response, AxiosError} from 'axios';
 
-type WordState = {
+export type WordState = {
   word: String,
   used: boolean,
 };
@@ -64,12 +65,17 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const startWriting = (minutes: number, words: number) => {
-    // TODO: get amount of words from API
-    dispatch({ type: 'start', payload: {
-      minutes,
-      words: []
-    }});
-
+    axios.get(`http://localhost:8080/words/de/${words}`)
+      .then((response: Response) => {
+        const words = response.data.words;
+        dispatch({ type: 'start', payload: {
+          minutes,
+          words
+        }});
+      })
+      .catch((error: AxiosError) => {
+        alert(`error while fetching words: ${error}`);
+      });
   };
 
   const stopWriting = () => {
@@ -84,7 +90,7 @@ function App() {
           running={state.running}
           stopWriting={stopWriting}
         />
-        <Words />
+        <Words words={state.words} />
         <Text />
         <Timer 
           timer={state.currentTimer}

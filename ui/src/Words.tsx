@@ -1,23 +1,16 @@
 import './Words.css';
+import { WordState } from './App';
 
-function Words() {
+function Words(props: { words: WordState[] }) {
   return (
     <div className="Words">
-      <span className="active">
-        First
-      </span>
-      <span className="inactive">
-        Second
-      </span>
-      <span className="active">
-        Third
-      </span>
-      <span className="inactive">
-        Fourth
-      </span>
-      <span className="active">
-        Fifth
-      </span>
+      {
+        props.words.map((word: WordState) => {
+          return <span key={`${word.word}`} className={ word.used ? "active" : "inactive"}>
+            {word.word}
+          </span>
+        })
+      }
     </div>
   );
 }
