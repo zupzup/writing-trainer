@@ -3,7 +3,7 @@ import Header from './Header';
 import Text from './Text';
 import Timer from './Timer';
 import Words from './Words';
-import { useReducer } from 'react';
+import { useReducer, ChangeEvent } from 'react';
 import axios, {AxiosResponse as Response, AxiosError} from 'axios';
 
 export type WordState = {
@@ -26,6 +26,7 @@ type StartPayload = {
 export type Action = 
   | { type: 'start'; payload: StartPayload }
   | { type: 'reset' }
+  | { type: 'updateWords', payload: WordState[] }
   | { type: 'tick' };
 
 const initialState: State = {
@@ -50,6 +51,13 @@ const reducer = (state: State, action: Action): State => {
         running: newTimer === 0 ? false : state.running,
         currentTimer: newTimer,
         words: state.words,
+      }
+    }
+    case 'updateWords': {
+      return {
+        running: state.running,
+        currentTimer: state.currentTimer,
+        words: action.payload
       }
     }
     case 'reset': {
@@ -78,6 +86,19 @@ function App() {
       });
   };
 
+  const updateText = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const text = event.target.value;
+    dispatch({
+      type: 'updateWords',
+      payload: state.words.map((w: WordState) => {
+        return {
+          word: w.word,
+          used: text.includes(w.word.toString()),
+        };
+      })
+    });
+  };
+
   const stopWriting = () => {
     dispatch({ type:'reset' });
   };
@@ -91,7 +112,7 @@ function App() {
           stopWriting={stopWriting}
         />
         <Words words={state.words} />
-        <Text />
+        <Text updateText={updateText}/>
         <Timer 
           timer={state.currentTimer}
           running={state.running}
