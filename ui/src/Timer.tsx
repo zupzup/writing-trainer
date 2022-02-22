@@ -2,7 +2,7 @@ import './Timer.css';
 import { useEffect, Dispatch } from 'react';
 import { Action } from './App';
 
-function Timer(props: { timer: number, running: boolean, dispatch: Dispatch<Action> }) {
+function Timer(props: { timer: number, running: boolean, stopTime: Date | null,  dispatch: Dispatch<Action> }) {
   useEffect(() => {
     let interval: any;
     if (props.running) {
@@ -15,10 +15,12 @@ function Timer(props: { timer: number, running: boolean, dispatch: Dispatch<Acti
     return () => clearInterval(interval);
 
   });
+  const now: number = new Date().valueOf();
+  const diff = props.stopTime ? (props.stopTime.valueOf() - now) / 1000 : 0;
 
   return (
-    <div className="Timer">
-      {props.timer}
+    <div className="Timer" key={props.timer}>
+      {Math.round(diff)}
     </div>
   );
 }

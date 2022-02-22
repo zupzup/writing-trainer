@@ -7,19 +7,20 @@ import { useReducer, ChangeEvent } from 'react';
 import axios, {AxiosResponse as Response, AxiosError} from 'axios';
 
 export type WordState = {
-  word: String,
+  word: string,
   used: boolean,
 };
 
 type State = {
   running: boolean,
   currentTimer: number,
+  stopTime: Date | null,
   words: WordState[],
 };
 
 type StartPayload = {
   minutes: number,
-  words: String[],
+  words: string[],
 };
 
 
@@ -32,17 +33,21 @@ export type Action =
 const initialState: State = {
   running: false,
   currentTimer: 0,
-  words: []
+  words: [],
+  stopTime: null,
 };
 
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'start': {
+      const stopTime = new Date();
+      stopTime.setMinutes(stopTime.getMinutes() + action.payload.minutes);
       return {
         running: true,
         currentTimer: action.payload.minutes * 60,
-        words: action.payload.words.map((word: String) => ({ word, used: false })),
+        words: action.payload.words.map((word: string) => ({ word, used: false })),
+        stopTime,
       }
     }
     case 'tick': {
@@ -51,13 +56,15 @@ const reducer = (state: State, action: Action): State => {
         running: newTimer === 0 ? false : state.running,
         currentTimer: newTimer,
         words: state.words,
+        stopTime: state.stopTime,
       }
     }
     case 'updateWords': {
       return {
         running: state.running,
         currentTimer: state.currentTimer,
-        words: action.payload
+        words: action.payload,
+        stopTime: state.stopTime,
       }
     }
     case 'reset': {
@@ -93,7 +100,7 @@ function App() {
       payload: state.words.map((w: WordState) => {
         return {
           word: w.word,
-          used: text.includes(w.word.toString()),
+          used: text.includes(w.word),
         };
       })
     });
@@ -117,6 +124,7 @@ function App() {
           timer={state.currentTimer}
           running={state.running}
           dispatch={dispatch}
+          stopTime={state.stopTime}
         />
       </div>
     </div>
