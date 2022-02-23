@@ -37,6 +37,7 @@ const initialState: State = {
   stopTime: null,
 };
 
+// TODO: implement language switcher
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
