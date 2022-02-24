@@ -37,8 +37,6 @@ const initialState: State = {
   stopTime: null,
 };
 
-// TODO: implement language switcher
-
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'start': {
@@ -80,8 +78,8 @@ const reducer = (state: State, action: Action): State => {
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const startWriting = (minutes: number, words: number) => {
-    axios.get(`http://localhost:8080/words/de/${words}`)
+  const startWriting = (minutes: number, words: number, lang: String) => {
+    axios.get(`http://localhost:8080/words/${lang}/${words}`)
       .then((response: Response) => {
         const words = response.data.words;
         dispatch({ type: 'start', payload: {
@@ -120,7 +118,7 @@ function App() {
           stopWriting={stopWriting}
         />
         <Words words={state.words} />
-        <Text updateText={updateText}/>
+        <Text updateText={updateText} running={state.running} />
         <Timer 
           timer={state.currentTimer}
           running={state.running}

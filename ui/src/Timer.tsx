@@ -16,7 +16,10 @@ function Timer(props: { timer: number, running: boolean, stopTime: Date | null, 
 
   });
   const now: number = new Date().valueOf();
-  const diff = props.stopTime ? (props.stopTime.valueOf() - now) / 1000 : 0;
+  let diff = props.stopTime ? (props.stopTime.valueOf() - now) / 1000 : 0;
+  if (diff <= 0) {
+    diff = 0;
+  }
 
   return (
     <div className="Timer" key={props.timer}>
